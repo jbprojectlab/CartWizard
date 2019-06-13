@@ -1,6 +1,7 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import firebase from 'react-native-firebase'
-import {SectionList, StyleSheet, Text, View} from 'react-native'
+import {TextInput, SectionList, StyleSheet, Text, View} from 'react-native'
+import AddItemButton from './add-item-button'
 
 const filterItems = (items, section) => {
   return items.map(item => {
@@ -10,7 +11,9 @@ const filterItems = (items, section) => {
 
 class List extends Component {
   state = {
-    items: []
+    items: [],
+    input: false,
+    text: ''
   }
 
   async componentDidMount() {
@@ -24,22 +27,44 @@ class List extends Component {
     }
   }
 
+  handleChange = text => {
+    this.setState({
+      text
+    })
+  }
+
+  handlePress = evt => {
+    this.setState({ 
+      input: true
+    })
+    //make button inactive
+    //add row to category
+    //open autopopulating input in new row (will be it's own component called AddItem)
+  }
+
   render() {
-    const {items} = this.state
-    const produce = filterItems(items, 'produce')
-    const meat = filterItems(items, 'meat')
+    const {items, input} = this.state
+    const {handleChange, handlePress} = this
+    const general = filterItems(items, 'general')
+    // const produce = filterItems(items, 'produce')
     return (
-      <SectionList
-        renderItem={({item, index, section}) => <Text key={index}>{item}</Text>}
+      <SectionList style={{margin: '10%'}}
+        renderItem={({item, index, section}) => <Fragment>
+            <Text key={item + index}>{item}</Text>
+            {input ? <TextInput 
+              onChangeText={handleChange}
+              style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+            /> : null}
+          </Fragment>
+        }
         renderSectionHeader={({section: {title}}) => (
-          <Text style={{fontWeight: 'bold'}}>{title}</Text>
+          <AddItemButton title={title} handlePress={handlePress} />
         )}
         sections={[
-          {title: 'General', data: []}, //pull data from where section === section
-          {title: 'Produce', data: produce},
-          {title: 'Meat/Poultry', data: meat}
+          {title: 'General', data: general}, //pull data from where section === section
+          // {title: 'Produce', data: produce}
         ]}
-        keyExtractor={function(item, index) {
+        keyExtractor={(item, index) => {
           return item + index
         }}
       />
@@ -49,8 +74,11 @@ class List extends Component {
 
 
 var styles = StyleSheet.create({
-  category: {
-    fontWeight: 'bold'
+  container: {
+    margin: '10%'
+  },
+  button: {
+    backgroundColor: '#56A572'
   }
 });
 
