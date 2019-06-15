@@ -3,11 +3,7 @@ import firebase from 'react-native-firebase'
 import {TextInput, SectionList, StyleSheet, Text, View} from 'react-native'
 import AddItemButton from './add-item-button'
 
-const filterItems = (items, section) => {
-  return items.map(item => {
-    if(item._data.section === section) return item.id
-  })
-}
+const filterItems = (items, section) => items.filter(item => item._data.section === section)
 
 class List extends Component {
   state = {
@@ -48,17 +44,13 @@ class List extends Component {
   render() {
     const {items, input, active} = this.state
     const {handleChange, handlePress} = this
-    const general = filterItems(items, 'General')
-    const produce = filterItems(items, 'produce')
+    const general = filterItems(items, 'General').map(item => item.id)
+    const produce = filterItems(items, 'Produce').map(item => item.id)
 
     return (
       <SectionList style={{margin: '10%'}}
         renderItem={({item, index, section}) => <Fragment>
             <Text>{item}</Text>
-            {input && active === section.title ? <TextInput 
-              onChangeText={handleChange}
-              style={{height: 30, borderColor: 'gray', borderWidth: 1}}
-            /> : null}
           </Fragment>
         }
         renderSectionHeader={({section: {title}}) => (
@@ -72,6 +64,11 @@ class List extends Component {
           item = item ? item.length : 0
           return index + item
         }}
+        SectionSeparatorComponent={({trailingItem, section}) => input && active === section.title && !trailingItem ? <TextInput 
+            onChangeText={handleChange}
+            style={{height: 30, borderColor: 'gray', borderWidth: 1}}
+          /> : null
+        }
       />
     )
   }    
