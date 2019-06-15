@@ -13,6 +13,7 @@ class List extends Component {
   state = {
     items: [],
     input: false,
+    active: '',
     text: ''
   }
 
@@ -33,9 +34,11 @@ class List extends Component {
     })
   }
 
-  handlePress = evt => {
-    this.setState({ 
-      input: true
+  handlePress = (evt, title) => {
+    console.log('evt:  ', title)
+    this.setState({
+      input: true,
+      active: title
     })
     //make button inactive
     //add row to category
@@ -43,29 +46,31 @@ class List extends Component {
   }
 
   render() {
-    const {items, input} = this.state
+    const {items, input, active} = this.state
     const {handleChange, handlePress} = this
-    const general = filterItems(items, 'general')
-    // const produce = filterItems(items, 'produce')
+    const general = filterItems(items, 'General')
+    const produce = filterItems(items, 'produce')
+
     return (
       <SectionList style={{margin: '10%'}}
         renderItem={({item, index, section}) => <Fragment>
-            <Text key={item + index}>{item}</Text>
-            {input ? <TextInput 
+            <Text>{item}</Text>
+            {input && active === section.title ? <TextInput 
               onChangeText={handleChange}
-              style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+              style={{height: 30, borderColor: 'gray', borderWidth: 1}}
             /> : null}
           </Fragment>
         }
         renderSectionHeader={({section: {title}}) => (
-          <AddItemButton title={title} handlePress={handlePress} />
+          <AddItemButton id={title} title={title} handlePress={evt => handlePress(evt, title)} />
         )}
         sections={[
           {title: 'General', data: general}, //pull data from where section === section
-          // {title: 'Produce', data: produce}
+          {title: 'Produce', data: produce}
         ]}
         keyExtractor={(item, index) => {
-          return item + index
+          item = item ? item.length : 0
+          return index + item
         }}
       />
     )
