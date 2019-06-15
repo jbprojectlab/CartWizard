@@ -3,22 +3,24 @@ import firebase from 'react-native-firebase'
 import {TextInput, SectionList, StyleSheet, Text, View} from 'react-native'
 import AddItemButton from './add-item-button'
 
-const filterItems = (items, section) => items.filter(item => item._data.section === section)
-
-class List extends Component {
+class Sections extends Component {
   state = {
-    items: [],
+    sections: [],
     input: false,
     active: '',
     text: ''
   }
 
   async componentDidMount() {
-    const items = []
+    const sections = []
     try {
-      const itemData = await firebase.firestore().collection('items').get()
-      itemData.forEach(item => items.push(item))
-      this.setState({items})
+      const sectionsData = await firebase.firestore().collection('sections').get()
+      const getData = section => {
+        const data = Object.values(section.data())
+        return data.length > 0 ? ['     '].concat(data) : ['     ']
+      }
+      sectionsData.forEach(section => sections.push({title: section.id, data: getData(section)}))
+      this.setState({sections})
     } catch(err) {
       console.error(err)
     }
@@ -42,24 +44,16 @@ class List extends Component {
   }
 
   render() {
-    const {items, input, active} = this.state
+    const {sections, input, active} = this.state
     const {handleChange, handlePress} = this
-    const general = filterItems(items, 'General').map(item => item.id)
-    const produce = filterItems(items, 'Produce').map(item => item.id)
 
     return (
       <SectionList style={{margin: '10%'}}
-        renderItem={({item, index, section}) => <Fragment>
-            <Text>{item}</Text>
-          </Fragment>
-        }
+        renderItem={({item, index, section}) => <Text style={{padding: 5}}>{item}</Text>}
         renderSectionHeader={({section: {title}}) => (
           <AddItemButton id={title} title={title} handlePress={evt => handlePress(evt, title)} />
         )}
-        sections={[
-          {title: 'General', data: general}, //pull data from where section === section
-          {title: 'Produce', data: produce}
-        ]}
+        sections={sections}
         keyExtractor={(item, index) => {
           item = item ? item.length : 0
           return index + item
@@ -84,7 +78,7 @@ var styles = StyleSheet.create({
   }
 });
 
-export default List
+export default Sections
 
 // const styles = StyleSheet.create({
 //   container: {
@@ -107,4 +101,25 @@ export default List
 
 
 
-
+      {/*<SectionList style={{margin: '10%'}}
+        renderItem={({item, index, section}) => <Fragment>
+            <Text>{item}</Text>
+          </Fragment>
+        }
+        renderSectionHeader={({section: {title}}) => (
+          <AddItemButton id={title} title={title} handlePress={evt => handlePress(evt, title)} />
+        )}
+        sections={[
+          {title: 'General', data: general}, //pull data from where section === section
+          {title: 'Produce', data: produce}
+        ]}
+        keyExtractor={(item, index) => {
+          item = item ? item.length : 0
+          return index + item
+        }}
+        SectionSeparatorComponent={({trailingItem, section}) => input && active === section.title && !trailingItem ? <TextInput 
+            onChangeText={handleChange}
+            style={{height: 30, borderColor: 'gray', borderWidth: 1}}
+          /> : null
+        }
+      />*/}

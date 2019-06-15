@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, Platform, Image, Text, View, ScrollView } from 'react-native'
 import firebase from 'react-native-firebase'
-import List from './components/list.js'
+import Sections from './components/sections.js'
 
 export default class App extends React.Component {
   constructor() {
@@ -19,7 +19,7 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <List />
+      <Sections />
     )
   }
 }
