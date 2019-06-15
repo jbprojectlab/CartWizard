@@ -60,8 +60,8 @@ class Sections extends Component {
         }}
         SectionSeparatorComponent={({trailingItem, section}) => input && active === section.title && !trailingItem ? <TextInput 
             onChangeText={handleChange}
-            style={{height: 30, borderColor: 'gray', borderWidth: 1}}
-          /> : null
+            style={{height: 30, borderColor: 'gray', borderWidth: 1, marginBottom: 50}}
+          /> : !trailingItem ? <Text style={{padding: 5, marginBottom: 50}} /> : null
         }
       />
     )
