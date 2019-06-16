@@ -10,7 +10,6 @@ class AddItemButton extends Component {
     const {title, handlePress} = this.props
     return (
       <Button
-        key={title.length}
         title={title}
         icon={{ name: 'add', color: 'white' }}
         iconRight
